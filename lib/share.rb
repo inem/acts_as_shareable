@@ -21,4 +21,9 @@ class Share < ActiveRecord::Base
     Share.find(:all, :conditions=>["shareable_type = ? and shareable_id = ? and shared_to_type = ? and shared_to_id = ?",
                     share, shareable.id, to, object.id])
   end
+  
+  def self.find_by_shareable_type_and_id(shareable_type, shareable_id)
+     shared = eval(shareable_type).find(shareable_id)
+    return shared
+  end
 end
