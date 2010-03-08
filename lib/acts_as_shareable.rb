@@ -45,6 +45,21 @@ module CC
 
           self.find(:all, merge_options(options,opts))
         end
+
+        def find_accessible_by(object, *opts)
+          shareable = ActiveRecord::Base.send(:class_name_of_active_record_descendant, self).to_s
+          shared_to = ActiveRecord::Base.send(:class_name_of_active_record_descendant, object.class).to_s
+          
+          class_name = shareable.tableize
+          
+          conditions = if(object.class == User)
+            ["(s.shareable_type =? and s.shared_to_type=? and s.shared_to_id = ?) OR (#{class_name}.user_id = ?)", 
+              shareable, shared_to, object.id, object.id]
+          else
+            ["(s.shareable_type =? and s.shared_to_type=? and s.shared_to_id = ?)", 
+              shareable, shared_to, object.id]
+          end
+
         
         def find_by_shared_to_and_user(object, user, *opts)
           shareable = ActiveRecord::Base.send(:class_name_of_active_record_descendant, self).to_s
